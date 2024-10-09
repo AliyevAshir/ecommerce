@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container profile-container">
+    <h1 class="mb-4"><p style="color:#D19C97">Profile of {{ user.name }}</p></h1>
+    <div class="profile-details">
+        <div class="profile-photo">
+            <img src="{{ user.photo }}" alt="{{ user.name }}">
+        </div>
+        <div class="profile-info">
+            <p><strong style="color: #D19C97;">Name:</strong> {{ user.name }}</p>
+            <p><strong style="color: #D19C97;">Email:</strong> {{ user.email }}</p>
+            <p><strong style="color: #D19C97;">Age:</strong> {{ user.age }}</p>
+            <p><strong style="color: #D19C97;">ID:</strong> {{ user.id }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .profile-container {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        .profile-details {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .profile-photo {
+            flex: 0 0 auto;
+        }
+        .profile-photo img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+        .profile-info p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+{% endblock %}

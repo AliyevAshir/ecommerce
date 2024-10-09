@@ -1,0 +1,48 @@
+{% extends 'base.html'%}
+{% block content%}
+<style>
+    .card-img-top {
+        height: 200px; /* Set a fixed height for the images */
+        object-fit: contain; /* Cover the area of the card without distortion */
+        width: 100%; /* Make the image take up the full width of the card */
+    }
+    .card {
+        border: 1px solid #ddd; /* Optional: border around the card */
+        border-radius: 0.25rem; /* Optional: rounded corners */
+    }
+    .card-body {
+        padding: 1rem; /* Padding inside the card body */
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row mt-3">
+        {% if products %}
+            {% for product in products %}
+                <div class="col-md-4 mb-4"> <!-- Adjust column size as needed -->
+                    <div class="card">
+                        <img src="{{ product.image }}" alt="{{ product.name }}" class="card-img-top"/>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
+                            </h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            <p><strong>Price:</strong> ${{ product.new_price }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p>No products found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock%}

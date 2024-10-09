@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #D19C97;
+            border-bottom: 2px solid #D19C97;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #D19C97;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e6e6e6;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        input[type="text"], input[type="email"], input[type="number"], select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #D19C97;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #b58a80;
+        }
+        .flashes {
+            list-style: none;
+            padding: 0;
+        }
+        .flashes li {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .flashes .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flashes .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        
+        <h2>Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Admin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                    <td>
+                        <form method="POST">
+                            <input type="hidden" name="entity_type" value="user">
+                            <input type="hidden" name="entity_id" value="{{ user.id }}">
+                            <input type="text" name="name" placeholder="Name" value="{{ user.name }}" required>
+                            <input type="email" name="email" placeholder="Email" value="{{ user.email }}" required>
+                            <label>
+                                <input type="checkbox" name="is_admin" {% if user.is_admin %}checked{% endif %}> Admin
+                            </label>
+                            <button type="submit" name="action" value="edit">Edit</button>
+                            <button type="submit" name="action" value="delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Add User</h3>
+        <form method="POST">
+            <input type="hidden" name="entity_type" value="user">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <label>
+                <input type="checkbox" name="is_admin"> Admin
+            </label>
+            <button type="submit" name="action" value="add">Add User</button>
+        </form>
+
+        <h2>Products</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Discount Price</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>{{ product.new_price }}</td>
+                    <td>{{ product.discount_price }}</td>
+                    <td>{{ product.category.title if product.category else 'N/A' }}</td>
+                    <td>
+                        <form method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="entity_type" value="product">
+                            <input type="hidden" name="entity_id" value="{{ product.id }}">
+                            <input type="text" name="name" placeholder="Name" value="{{ product.name }}" required>
+                            <input type="text" name="description" placeholder="Description" value="{{ product.description }}" required>
+                            <input type="number" step="0.01" name="new_price" placeholder="New Price" value="{{ product.new_price }}" required>
+                            <input type="number" step="0.01" name="discount_price" placeholder="Discount Price" value="{{ product.discount_price }}" required>
+                            <select name="category_id" required>
+                                <option value="">Select Category</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if category.id == product.category_id %}selected{% endif %}>{{ category.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="file" name="image" accept="image/*">
+                            <button type="submit" name="action" value="edit">Edit</button>
+                            <button type="submit" name="action" value="delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Add Product</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="entity_type" value="product">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="text" name="description" placeholder="Description" required>
+            <input type="number" step="0.01" name="new_price" placeholder="New Price" required>
+            <input type="number" step="0.01" name="discount_price" placeholder="Discount Price" required>
+            <select name="category_id" required>
+                <option value="">Select Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.title }}</option>
+                {% endfor %}
+            </select>
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit" name="action" value="add">Add Product</button>
+        </form>
+
+        <h2>Contacts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contact in contacts %}
+                <tr>
+                    <td>{{ contact.name }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{{ contact.subject }}</td>
+                    <td>{{ contact.message }}</td>
+                    <td>
+                        <form method="POST">
+                            <input type="hidden" name="entity_type" value="contact">
+                            <input type="hidden" name="entity_id" value="{{ contact.id }}">
+                            <button type="submit" name="action" value="delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Reviews</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Product</th>
+                    <th>Content</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review.user.name }}</td>
+                    <td>{{ review.product.name }}</td>
+                    <td>{{ review.content }}</td>
+                    <td>
+                        <form method="POST">
+                            <input type="hidden" name="entity_type" value="review">
+                            <input type="hidden" name="entity_id" value="{{ review.id }}">
+                            <button type="submit" name="action" value="delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

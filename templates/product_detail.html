@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+        <div
+          class="d-flex flex-column align-items-center justify-content-center"
+          style="min-height: 300px"
+        >
+          <h1 class="font-weight-semi-bold text-uppercase mb-3">Shop Detail</h1>
+          <div class="d-inline-flex">
+            <p class="m-0"><a href="#">Home</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0">Shop Detail</p>
+          </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Flash Messages Start -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="row">
+                    <div class="col">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <!-- Flash Messages End -->
+  
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mt-3"> <!-- Product Image Column -->
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="img-fluid">
+            </div>
+            <div class="col-md-8"> <!-- Product Details Column -->
+                <h1>{{ product.name }}</h1>
+                <p>{{ product.description }}</p>
+                <p>Price: ${{ product.new_price }}</p>
+                <form action="{{ url_for('add_to_favorites') }}" method="POST">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-sm btn-primary">Add to Favorites</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row px-xl-5 mt-4"> <!-- Tabs for Description and Reviews -->
+            <div class="col">
+                <div class="nav nav-tabs justify-content-center border-secondary mb-2">
+                    <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Description</a>
+                    <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Reviews ({{ product.reviews|length }})</a>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tab-pane-1"> <!-- Description Tab -->
+                        <h4 class="mb-3">Product Description</h4>
+                        <p>{{ product.extra_info }}</p>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-pane-3"> <!-- Reviews Tab -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="mb-4">{{ product.reviews|length }} Reviews for "{{ product.name }}"</h4>
+                                {% for review in product.reviews %}
+                                <div class="media mb-4">
+                                    <img src="{{ review.user.photo }}" alt="User Image" class="img-fluid mr-3 mt-1 rounded-circle" style="width: 45px" />
+                                    <div class="media-body">
+                                        <h6>{{ review.user.name}} <small class="text-muted"> - <i>{{ review.created_at.strftime('%d %b %Y') }}</i></small></h6>
+                                        <p>{{ review.content }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <h4 class="mb-4">Leave a Review</h4>
+                                <small>Your email address will not be published. Required fields are marked *</small>
+                                {% if session.get('user_name') %}
+                                    <form action="{{ url_for('add_review') }}" method="POST">
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="user_id" value="{{ session.get('user_name') }}">
+
+                                        <div class="form-group">
+                                            <label for="message">Your Review *</label>
+                                            <textarea id="message" name="content" cols="30" rows="5" class="form-control" required></textarea>
+                                        </div>
+                                        <div class="form-group mb-0">
+                                            <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <p>Please <a href="{{ url_for('login') }}">log in</a> to leave a review.</p>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

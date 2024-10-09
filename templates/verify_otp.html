@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}
+Verify OTP
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Verify Your OTP</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="POST" class="text-center">
+                <div class="form-group">
+                    <input type="text" name="otp" placeholder="Enter the OTP sent to your email" required class="form-control mb-3" style="width: 300px; margin: 0 auto; background-color: #fff;">
+                </div>
+                <button type="submit" class="btn">Verify</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+    }
+
+    h2 {
+        color: #D19C97;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .card {
+        background-color: #fff;
+        border-radius: 8px;
+        border: none;
+        padding: 20px;
+    }
+
+    .form-control {
+        border: 1px solid #D19C97;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .form-control:focus {
+        border-color: #D19C97;
+        box-shadow: none;
+    }
+
+    .btn {
+        background-color: #D19C97;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
