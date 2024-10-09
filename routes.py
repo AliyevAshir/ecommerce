@@ -320,20 +320,18 @@ def verify_otp(email):
 
 
 @app.context_processor
-def inject_categories():
-    categories = Category.query.all() 
-    return dict(categories=categories)
-@app.context_processor
-def inject_cart_and_favorites_count():
-    user_id = session.get('user_id')  
+def inject_global_variables():
+    
+    categories = Category.query.all()
+    
+    user_id = session.get('user_id')
     if user_id:
-        favorites_count = Favorite.query.filter_by(user_id=user_id).count() 
-        cart_count = Cart.query.filter_by(user_id=user_id).count()  
+        favorites_count = Favorite.query.filter_by(user_id=user_id).count()
+        cart_count = Cart.query.filter_by(user_id=user_id).count()
     else:
         favorites_count = 0
         cart_count = 0
-
-    return dict(favorites_count=favorites_count, cart_count=cart_count)
-
+    
+    return dict(categories=categories, favorites_count=favorites_count, cart_count=cart_count)
 if __name__ == '__main__':
     app.run(debug=True)
